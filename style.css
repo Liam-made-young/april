@@ -1,0 +1,14 @@
+.search-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#search-input {
+    background-color: brown;
+}
+
+
+
+
+
