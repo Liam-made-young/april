@@ -17,6 +17,21 @@ const FILES_DATA = [
   { name: "Photo", type: "image", src: "images/381B29C6-F186-40BF-A29B-883F121222ED_1_105_c.jpeg" }
 ];
 
+// Stem folder data
+const stemFolders = [
+  { 
+    name: "Young Picasso", 
+    type: "stems", 
+    folder: "audio/[stems]_young picasso",
+    tracks: [
+      { name: "Bass", file: "bass.mp3" },
+      { name: "Drums", file: "drums.mp3" },
+      { name: "Vocals", file: "vocals.mp3" },
+      { name: "Other", file: "other.mp3" }
+    ]
+  }
+];
+
 // Cache DOM elements to avoid repeated queries
 const DOM = {
   mainWindow: document.querySelector('.main-window'),
@@ -43,6 +58,18 @@ function getMimeType(src) {
   return mimeTypes[ext] || 'application/octet-stream';
 }
 
+// Add stem folders to the file data
+function addStemFoldersToFiles() {
+  stemFolders.forEach(stem => {
+    FILES_DATA.push({
+      name: stem.name + " (Stem Player)",
+      type: "stems",
+      src: stem.folder,
+      stemData: stem
+    });
+  });
+}
+
 // Create file elements using document fragment for better performance
 function populateFiles(files) {
   // Clear main window
@@ -56,6 +83,12 @@ function populateFiles(files) {
     fileElement.className = 'file';
     fileElement.dataset.type = file.type;
     fileElement.dataset.src = file.src;
+    
+    // Store stem data reference if applicable
+    if (file.stemData) {
+      fileElement.dataset.stems = "true";
+    }
+    
     fileElement.textContent = file.name;
     
     fragment.appendChild(fileElement);
@@ -88,7 +121,14 @@ function handleFileClick(e) {
   DOM.content.innerHTML = '';
   
   try {
-    if (type === 'film') {
+    if (type === 'stems') {
+      // Find the stem data
+      const stemData = FILES_DATA.find(file => 
+        file.type === 'stems' && file.src === src
+      ).stemData;
+      
+      createStemPlayer(stemData);
+    } else if (type === 'film') {
       DOM.content.innerHTML = `<video controls width="100%"><source src="${src}" type="${getMimeType(src)}"></video>`;
     } else if (type === 'audio') {
       DOM.content.innerHTML = `<audio controls style="width: 100%"><source src="${src}" type="${getMimeType(src)}"></audio>`;
@@ -107,6 +147,160 @@ function handleFileClick(e) {
   } catch (error) {
     console.error('Error displaying file:', error);
     DOM.content.innerHTML = `<div class="error">Error loading file: ${error.message}</div>`;
+  }
+}
+
+// Create the minimalist stem player interface
+function createStemPlayer(stemData) {
+  // Create audio context
+  const AudioContext = window.AudioContext || window.webkitAudioContext;
+  const audioContext = new AudioContext();
+  
+  // Create stem player container
+  const stemPlayerContainer = document.createElement('div');
+  stemPlayerContainer.className = 'stem-player';
+  
+  // Create controls grid
+  const controlsGrid = document.createElement('div');
+  controlsGrid.className = 'stem-controls-grid';
+  
+  // Track objects to store audio nodes
+  const tracks = [];
+  
+  // Initialize tracks
+  stemData.tracks.forEach(track => {
+    tracks.push({
+      name: track.name,
+      file: track.file,
+      audio: null,
+      source: null,
+      gainNode: audioContext.createGain(),
+      volumeLevel: 3 // Default middle level
+    });
+  });
+  
+  // Create grid of dots - 4 columns (tracks) x 7 rows (volume levels)
+  for (let row = 0; row < 7; row++) {
+    const volumeLevel = 6 - row; // Invert so top row is highest volume
+    
+    tracks.forEach((track, trackIndex) => {
+      const cell = document.createElement('div');
+      cell.className = 'volume-cell';
+      
+      const radio = document.createElement('input');
+      radio.type = 'radio';
+      radio.name = `volume-${trackIndex}`;
+      radio.value = volumeLevel;
+      radio.id = `volume-${trackIndex}-${volumeLevel}`;
+      radio.checked = volumeLevel === track.volumeLevel;
+      
+      radio.addEventListener('change', function() {
+        adjustVolume(trackIndex, volumeLevel);
+      });
+      
+      const label = document.createElement('label');
+      label.htmlFor = radio.id;
+      label.className = 'volume-label';
+      
+      cell.appendChild(radio);
+      cell.appendChild(label);
+      controlsGrid.appendChild(cell);
+    });
+  }
+  
+  stemPlayerContainer.appendChild(controlsGrid);
+  
+  // Add simple play button
+  const playButton = document.createElement('div');
+  playButton.className = 'play-button';
+  playButton.addEventListener('click', togglePlayAll);
+  
+  stemPlayerContainer.appendChild(playButton);
+  
+  // Add simple progress bar
+  const progressContainer = document.createElement('div');
+  progressContainer.className = 'progress-container';
+  
+  const progressMarker = document.createElement('div');
+  progressMarker.className = 'progress-marker';
+  
+  progressContainer.appendChild(progressMarker);
+  stemPlayerContainer.appendChild(progressContainer);
+  
+  // Append to content
+  DOM.content.appendChild(stemPlayerContainer);
+  
+  // Status variables
+  let isPlaying = false;
+  
+  // Load audio tracks
+  tracks.forEach((track, index) => {
+    const audioElement = new Audio(`${stemData.folder}/${track.file}`);
+    tracks[index].audio = audioElement;
+    
+    // When audio is loaded, connect to Web Audio API
+    audioElement.addEventListener('canplaythrough', () => {
+      const source = audioContext.createMediaElementSource(audioElement);
+      source.connect(track.gainNode);
+      track.gainNode.connect(audioContext.destination);
+      track.source = source;
+      
+      // Set initial volume level
+      const initialVolume = mapLevelToVolume(track.volumeLevel);
+      track.gainNode.gain.value = initialVolume;
+    });
+    
+    // Update progress marker during playback
+    audioElement.addEventListener('timeupdate', updateProgress);
+    
+    // Load the audio
+    audioElement.load();
+  });
+  
+  // Map volume level (0-6) to actual gain value (0-1)
+  function mapLevelToVolume(level) {
+    return Math.pow(level / 6, 1.5);
+  }
+  
+  // Adjust volume for a track
+  function adjustVolume(trackIndex, level) {
+    const track = tracks[trackIndex];
+    track.volumeLevel = level;
+    track.gainNode.gain.value = mapLevelToVolume(level);
+  }
+  
+  // Toggle play/pause for all tracks
+  function togglePlayAll() {
+    if (audioContext.state === 'suspended') {
+      audioContext.resume();
+    }
+    
+    if (!isPlaying) {
+      // Start playback
+      tracks.forEach(track => {
+        track.audio.play();
+      });
+      
+      playButton.style.opacity = 0.6;
+      isPlaying = true;
+    } else {
+      // Pause playback
+      tracks.forEach(track => {
+        track.audio.pause();
+      });
+      
+      playButton.style.opacity = 1;
+      isPlaying = false;
+    }
+  }
+  
+  // Update progress marker
+  function updateProgress() {
+    if (tracks.length === 0 || !tracks[0].audio) return;
+    
+    const audio = tracks[0].audio;
+    const progress = (audio.currentTime / audio.duration) * 100;
+    progressMarker.style.left = `${progress}%`;
   }
 }
 
@@ -134,7 +328,7 @@ function setupCategoryFilters() {
   });
 }
 
-// Updated draggable popup function
+// Make popup draggable
 function makePopupDraggable() {
   const popup = DOM.contentWindow;
   const content = DOM.content;
@@ -225,6 +419,9 @@ function makePopupDraggable() {
 
 // Initialize the application
 function init() {
+  // Add stem folders to the file data
+  addStemFoldersToFiles();
+  
   // Add 'All' category if it doesn't exist
   if (!document.querySelector('.category[data-category="all"]')) {
     const sidebar = document.querySelector('.sidebar ul');
@@ -238,12 +435,11 @@ function init() {
     DOM.categories = document.querySelectorAll('.category');
   }
   
-  // Set up close button
-  DOM.closeBtn.addEventListener('click', () => {
-    DOM.contentWindow.style.display = 'none';
-    // Use timeout to make the transition smoother
-    setTimeout(() => { DOM.content.innerHTML = ''; }, 300);
-  });
+  // Make popup draggable
+  makePopupDraggable();
+  
+  // Set up category filters
+  setupCategoryFilters();
   
   // Add keyboard support for ESC key
   document.addEventListener('keydown', (e) => {
@@ -252,12 +448,6 @@ function init() {
       setTimeout(() => { DOM.content.innerHTML = ''; }, 300);
     }
   });
-  
-  // Set up category filters
-  setupCategoryFilters();
-  
-  // Make popup draggable
-  makePopupDraggable();
   
   // Initial population of files
   populateFiles(FILES_DATA);
