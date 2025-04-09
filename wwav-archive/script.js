@@ -25,8 +25,10 @@ files.forEach(file => {
         const type = file.getAttribute('data-type');
         const src = file.getAttribute('data-src');
 
-        if (type === 'video' || type === 'film') {
+        if (type === 'film') {
             content.innerHTML = `<video controls width="100%"><source src="${src}" type="video/mp4"></video>`;
+        } else if (type === 'audio') {
+            content.innerHTML = `<audio controls style="width: 100%"><source src="${src}" type="audio/mpeg"></audio>`;
         } else if (type === 'image') {
             content.innerHTML = `<img src="${src}" style="width: 100%; cursor: zoom-in;" onclick="this.style.transform = this.style.transform === 'scale(2)' ? 'scale(1)' : 'scale(2)';">`;
         }
