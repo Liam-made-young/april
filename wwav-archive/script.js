@@ -1,5 +1,6 @@
-// File data using audio files from the audio directory
+// File data using files from audio, films, and images directories
 const FILES_DATA = [
+  // Audio files
   { name: "tokyo taxi cab", type: "audio", src: "audio/tokyo taxi cab.m4a" },
   { name: "Mission", type: "audio", src: "audio/Mission.mp3" },
   { name: "bushwick", type: "audio", src: "audio/bushwick.m4a" },
@@ -7,7 +8,13 @@ const FILES_DATA = [
   { name: "White Party", type: "audio", src: "audio/White Party.mp3" },
   { name: "Free?", type: "audio", src: "audio/Free?.mp3" },
   { name: "camp jewell ymca", type: "audio", src: "audio/camp jewell ymca.mp3" },
-  { name: "Resurrected", type: "audio", src: "audio/Resurrected.m4a" }
+  { name: "Resurrected", type: "audio", src: "audio/Resurrected.m4a" },
+  
+  // Film files
+  { name: "Screen Recording", type: "film", src: "films/ScreenRecording_01-02-2025 02-34-14_1.mp4" },
+  
+  // Image files
+  { name: "Photo", type: "image", src: "images/381B29C6-F186-40BF-A29B-883F121222ED_1_105_c.jpeg" }
 ];
 
 // Cache DOM elements to avoid repeated queries
@@ -127,6 +134,95 @@ function setupCategoryFilters() {
   });
 }
 
+// Updated draggable popup function
+function makePopupDraggable() {
+  const popup = DOM.contentWindow;
+  const content = DOM.content;
+  
+  // Create a title bar for dragging
+  const titleBar = document.createElement('div');
+  titleBar.className = 'popup-titlebar';
+  titleBar.innerHTML = '<span class="popup-title">Media Viewer</span>';
+  
+  // Reposition close button to be inside title bar
+  DOM.closeBtn.remove(); // Remove from current position
+  titleBar.appendChild(DOM.closeBtn);
+  
+  // Insert title bar at the beginning of popup
+  popup.insertBefore(titleBar, popup.firstChild);
+  
+  // Variables for drag state
+  let isDragging = false;
+  let offsetX, offsetY;
+  
+  // Mouse down on title bar starts drag
+  titleBar.addEventListener('mousedown', startDrag);
+  
+  function startDrag(e) {
+    // Ignore if it's the close button
+    if (e.target === DOM.closeBtn) return;
+    
+    isDragging = true;
+    
+    // Get current position and compute real coordinates
+    const rect = popup.getBoundingClientRect();
+    
+    // Fix initial position to current visual position
+    popup.style.top = rect.top + 'px';
+    popup.style.left = rect.left + 'px';
+    popup.style.transform = 'none'; // Remove centering transform
+    
+    // Calculate offset within the titlebar
+    offsetX = e.clientX - rect.left;
+    offsetY = e.clientY - rect.top;
+    
+    // Add event listeners for drag and end
+    document.addEventListener('mousemove', dragPopup);
+    document.addEventListener('mouseup', stopDrag);
+    
+    // Prevent default behavior and text selection
+    e.preventDefault();
+  }
+  
+  function dragPopup(e) {
+    if (!isDragging) return;
+    
+    // Calculate new position
+    const x = e.clientX - offsetX;
+    const y = e.clientY - offsetY;
+    
+    // Update position - use direct top/left instead of transform
+    popup.style.left = x + 'px';
+    popup.style.top = y + 'px';
+    
+    e.preventDefault();
+  }
+  
+  function stopDrag() {
+    isDragging = false;
+    
+    // Remove event listeners
+    document.removeEventListener('mousemove', dragPopup);
+    document.removeEventListener('mouseup', stopDrag);
+  }
+  
+  // Update close button behavior
+  DOM.closeBtn.addEventListener('click', (e) => {
+    e.stopPropagation(); // Prevent event from bubbling to title bar
+    popup.style.display = 'none';
+    
+    // Clear content
+    setTimeout(() => { content.innerHTML = ''; }, 300);
+    
+    // Reset position for next opening
+    setTimeout(() => {
+      popup.style.top = '50%';
+      popup.style.left = '50%';
+      popup.style.transform = 'translate(-50%, -50%)';
+    }, 300);
+  });
+}
+
 // Initialize the application
 function init() {
   // Add 'All' category if it doesn't exist
@@ -159,6 +255,9 @@ function init() {
   
   // Set up category filters
   setupCategoryFilters();
+  
+  // Make popup draggable
+  makePopupDraggable();
   
   // Initial population of files
   populateFiles(FILES_DATA);

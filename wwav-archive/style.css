@@ -174,33 +174,50 @@ body {
     z-index: 1000;
     padding: 0;
     overflow: hidden;
+    
+    /* Add these properties for dragging */
+    cursor: default;
+    user-select: none;
+    transition: opacity 0.3s ease; /* Only transition opacity, not position */
 }
 
-.content-window .close-btn {
+/* Title bar for dragging */
+.popup-titlebar {
+    background: linear-gradient(to bottom, #e6e6e6, #d1d1d1);
+    padding: 8px 10px;
+    border-bottom: 1px solid #a9a9a9;
+    cursor: move;
+    height: 22px;
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.popup-title {
+    font-size: 13px;
+    font-weight: bold;
+    color: #333;
+    margin-left: 15px;
+    text-shadow: 0 1px 0 white;
+}
+
+/* Update close button positioning */
+.close-btn {
     position: absolute;
     top: 5px;
-    left: 10px;
+    left: 8px;
     width: 12px;
     height: 12px;
     border-radius: 50%;
     background-color: #ff5f57;
     border: 1px solid #e33e32;
     font-size: 0;
+    cursor: pointer;
     z-index: 2;
 }
 
-.content-window::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 22px;
-    background: linear-gradient(to bottom, #e6e6e6, #d1d1d1);
-    border-bottom: 1px solid #a9a9a9;
-}
-
+/* Update content area margin */
 .content {
-    margin-top: 32px;
+    margin-top: 10px;
     padding: 10px 20px 20px;
 }
