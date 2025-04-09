@@ -1,0 +1,134 @@
+{
+  "audio": [
+    {
+      "name": "Micheals Body",
+      "src": "audio/Micheals Body.mp3"
+    },
+    {
+      "name": "tokyo taxi cab",
+      "src": "audio/tokyo taxi cab.m4a"
+    },
+    {
+      "name": "sutters",
+      "src": "audio/sutters.wav"
+    },
+    {
+      "name": "camp jewell ymca",
+      "src": "audio/camp jewell ymca.mp3"
+    },
+    {
+      "name": "scars",
+      "src": "audio/scars.wav"
+    },
+    {
+      "name": "Magdeline",
+      "src": "audio/Magdeline.wav"
+    },
+    {
+      "name": "White Party",
+      "src": "audio/White Party.mp3"
+    },
+    {
+      "name": "Golden ball pt.2",
+      "src": "audio/Golden ball pt.2.m4a"
+    },
+    {
+      "name": "Free?",
+      "src": "audio/Free?.mp3"
+    },
+    {
+      "name": "Resurrected",
+      "src": "audio/Resurrected.m4a"
+    },
+    {
+      "name": "3.) henry young_M",
+      "src": "audio/3.) henry young_M.wav"
+    },
+    {
+      "name": "maktub",
+      "src": "audio/maktub.wav"
+    },
+    {
+      "name": "bushwick",
+      "src": "audio/bushwick.m4a"
+    },
+    {
+      "name": "Den",
+      "src": "audio/Den.m4a"
+    },
+    {
+      "name": "4.) parking lot angels_M",
+      "src": "audio/4.) parking lot angels_M.wav"
+    },
+    {
+      "name": "god, trust in me",
+      "src": "audio/god, trust in me.wav"
+    },
+    {
+      "name": "Mission",
+      "src": "audio/Mission.mp3"
+    },
+    {
+      "name": "Marlboroz on the roof",
+      "src": "audio/Marlboroz on the roof.wav"
+    }
+  ],
+  "films": [
+    {
+      "name": "ScreenRecording_01-02-2025 02-34-14_1",
+      "src": "films/ScreenRecording_01-02-2025 02-34-14_1.mp4"
+    }
+  ],
+  "images": [
+    {
+      "name": "381B29C6-F186-40BF-A29B-883F121222ED_1_105_c",
+      "src": "images/381B29C6-F186-40BF-A29B-883F121222ED_1_105_c.jpeg"
+    }
+  ],
+  "stems": [
+    {
+      "name": "Marlboroz On The Roof",
+      "folder": "audio/[stems]_Marlboroz on the roof",
+      "tracks": [
+        {
+          "name": "Other",
+          "file": "other.mp3"
+        },
+        {
+          "name": "Bass",
+          "file": "bass.mp3"
+        },
+        {
+          "name": "Drums",
+          "file": "drums.mp3"
+        },
+        {
+          "name": "Vocals",
+          "file": "vocals.mp3"
+        }
+      ]
+    },
+    {
+      "name": "Young Picasso",
+      "folder": "audio/[stems]_young picasso",
+      "tracks": [
+        {
+          "name": "Other",
+          "file": "other.mp3"
+        },
+        {
+          "name": "Bass",
+          "file": "bass.mp3"
+        },
+        {
+          "name": "Drums",
+          "file": "drums.mp3"
+        },
+        {
+          "name": "Vocals",
+          "file": "vocals.mp3"
+        }
+      ]
+    }
+  ]
+}
