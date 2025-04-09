@@ -1,38 +1,4 @@
-// File data using files from audio, films, and images directories
-const FILES_DATA = [
-  // Audio files
-  { name: "tokyo taxi cab", type: "audio", src: "audio/tokyo taxi cab.m4a" },
-  { name: "Mission", type: "audio", src: "audio/Mission.mp3" },
-  { name: "bushwick", type: "audio", src: "audio/bushwick.m4a" },
-  { name: "Micheals Body", type: "audio", src: "audio/Micheals Body.mp3" },
-  { name: "White Party", type: "audio", src: "audio/White Party.mp3" },
-  { name: "Free?", type: "audio", src: "audio/Free?.mp3" },
-  { name: "camp jewell ymca", type: "audio", src: "audio/camp jewell ymca.mp3" },
-  { name: "Resurrected", type: "audio", src: "audio/Resurrected.m4a" },
-  
-  // Film files
-  { name: "Screen Recording", type: "film", src: "films/ScreenRecording_01-02-2025 02-34-14_1.mp4" },
-  
-  // Image files
-  { name: "Photo", type: "image", src: "images/381B29C6-F186-40BF-A29B-883F121222ED_1_105_c.jpeg" }
-];
-
-// Stem folder data
-const stemFolders = [
-  { 
-    name: "Young Picasso", 
-    type: "stems", 
-    folder: "audio/[stems]_young picasso",
-    tracks: [
-      { name: "Bass", file: "bass.mp3" },
-      { name: "Drums", file: "drums.mp3" },
-      { name: "Vocals", file: "vocals.mp3" },
-      { name: "Other", file: "other.mp3" }
-    ]
-  }
-];
-
-// Cache DOM elements to avoid repeated queries
+// Cache DOM elements
 const DOM = {
   mainWindow: document.querySelector('.main-window'),
   contentWindow: document.getElementById('content-window'),
@@ -40,6 +6,9 @@ const DOM = {
   closeBtn: document.querySelector('.close-btn'),
   categories: document.querySelectorAll('.category')
 };
+
+// Global files data
+let FILES_DATA = [];
 
 // Determine media type by file extension
 function getMimeType(src) {
@@ -58,16 +27,62 @@ function getMimeType(src) {
   return mimeTypes[ext] || 'application/octet-stream';
 }
 
-// Add stem folders to the file data
-function addStemFoldersToFiles() {
-  stemFolders.forEach(stem => {
-    FILES_DATA.push({
-      name: stem.name + " (Stem Player)",
-      type: "stems",
-      src: stem.folder,
-      stemData: stem
+// Load files data from JSON
+async function loadFilesData() {
+  try {
+    const response = await fetch('files.json');
+    if (!response.ok) {
+      throw new Error(`HTTP error! Status: ${response.status}`);
+    }
+    
+    const data = await response.json();
+    
+    // Process audio files
+    data.audio.forEach(file => {
+      FILES_DATA.push({
+        name: file.name,
+        type: 'audio',
+        src: file.src
+      });
     });
-  });
+    
+    // Process film files
+    data.films.forEach(file => {
+      FILES_DATA.push({
+        name: file.name,
+        type: 'film',
+        src: file.src
+      });
+    });
+    
+    // Process image files
+    data.images.forEach(file => {
+      FILES_DATA.push({
+        name: file.name,
+        type: 'image',
+        src: file.src
+      });
+    });
+    
+    // Process stem folders
+    data.stems.forEach(stem => {
+      FILES_DATA.push({
+        name: stem.name + " (Stem Player)",
+        type: 'stems',
+        src: stem.folder,
+        stemData: stem
+      });
+    });
+    
+    // Initial population of files
+    populateFiles(FILES_DATA);
+    
+    console.log(`Loaded ${FILES_DATA.length} files from JSON`);
+    
+  } catch (error) {
+    console.error('Error loading files data:', error);
+    DOM.mainWindow.innerHTML = `<div class="error">Error loading files: ${error.message}</div>`;
+  }
 }
 
 // Create file elements using document fragment for better performance
@@ -152,9 +167,8 @@ function handleFileClick(e) {
 
 // Create the minimalist stem player interface
 function createStemPlayer(stemData) {
-  // Create audio context
-  const AudioContext = window.AudioContext || window.webkitAudioContext;
-  const audioContext = new AudioContext();
+  // Create audio context only when playing to avoid autoplay policy issues
+  let audioContext;
   
   // Create stem player container
   const stemPlayerContainer = document.createElement('div');
@@ -164,17 +178,21 @@ function createStemPlayer(stemData) {
   const controlsGrid = document.createElement('div');
   controlsGrid.className = 'stem-controls-grid';
   
-  // Track objects to store audio nodes
+  // Track objects to store audio
   const tracks = [];
   
   // Initialize tracks
   stemData.tracks.forEach(track => {
+    const audioElement = new Audio();
+    audioElement.preload = 'auto'; // Ensure preloading
+    audioElement.src = `${stemData.folder}/${track.file}`;
+    
     tracks.push({
       name: track.name,
       file: track.file,
-      audio: null,
+      audio: audioElement,
       source: null,
-      gainNode: audioContext.createGain(),
+      gainNode: null,
       volumeLevel: 3 // Default middle level
     });
   });
@@ -195,7 +213,9 @@ function createStemPlayer(stemData) {
       radio.checked = volumeLevel === track.volumeLevel;
       
       radio.addEventListener('change', function() {
-        adjustVolume(trackIndex, volumeLevel);
+        if (audioContext) { // Only if audio context is initialized
+          adjustVolume(trackIndex, volumeLevel);
+        }
       });
       
       const label = document.createElement('label');
@@ -213,7 +233,49 @@ function createStemPlayer(stemData) {
   // Add simple play button
   const playButton = document.createElement('div');
   playButton.className = 'play-button';
-  playButton.addEventListener('click', togglePlayAll);
+  
+  // Add debug message
+  const debugMsg = document.createElement('div');
+  debugMsg.className = 'debug-message';
+  debugMsg.style.display = 'none';
+  stemPlayerContainer.appendChild(debugMsg);
+  
+  // Play button event handler
+  playButton.addEventListener('click', async () => {
+    try {
+      // Initialize audio context on first play (to avoid autoplay policy)
+      if (!audioContext) {
+        // Create audio context
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        audioContext = new AudioContext();
+        
+        // Connect audio nodes
+        for (let i = 0; i < tracks.length; i++) {
+          const track = tracks[i];
+          track.gainNode = audioContext.createGain();
+          track.source = audioContext.createMediaElementSource(track.audio);
+          track.source.connect(track.gainNode);
+          track.gainNode.connect(audioContext.destination);
+          
+          // Set initial volume level
+          track.gainNode.gain.value = mapLevelToVolume(track.volumeLevel);
+          
+          // Add update progress handler
+          track.audio.addEventListener('timeupdate', updateProgress);
+        }
+      }
+      
+      if (audioContext.state === 'suspended') {
+        await audioContext.resume();
+      }
+      
+      togglePlayAll();
+    } catch (error) {
+      console.error('Audio playback error:', error);
+      debugMsg.textContent = `Error: ${error.message}`;
+      debugMsg.style.display = 'block';
+    }
+  });
   
   stemPlayerContainer.appendChild(playButton);
   
@@ -233,30 +295,6 @@ function createStemPlayer(stemData) {
   // Status variables
   let isPlaying = false;
   
-  // Load audio tracks
-  tracks.forEach((track, index) => {
-    const audioElement = new Audio(`${stemData.folder}/${track.file}`);
-    tracks[index].audio = audioElement;
-    
-    // When audio is loaded, connect to Web Audio API
-    audioElement.addEventListener('canplaythrough', () => {
-      const source = audioContext.createMediaElementSource(audioElement);
-      source.connect(track.gainNode);
-      track.gainNode.connect(audioContext.destination);
-      track.source = source;
-      
-      // Set initial volume level
-      const initialVolume = mapLevelToVolume(track.volumeLevel);
-      track.gainNode.gain.value = initialVolume;
-    });
-    
-    // Update progress marker during playback
-    audioElement.addEventListener('timeupdate', updateProgress);
-    
-    // Load the audio
-    audioElement.load();
-  });
-  
   // Map volume level (0-6) to actual gain value (0-1)
   function mapLevelToVolume(level) {
     return Math.pow(level / 6, 1.5);
@@ -266,23 +304,35 @@ function createStemPlayer(stemData) {
   function adjustVolume(trackIndex, level) {
     const track = tracks[trackIndex];
     track.volumeLevel = level;
-    track.gainNode.gain.value = mapLevelToVolume(level);
+    if (track.gainNode) {
+      track.gainNode.gain.value = mapLevelToVolume(level);
+    }
   }
   
   // Toggle play/pause for all tracks
   function togglePlayAll() {
-    if (audioContext.state === 'suspended') {
-      audioContext.resume();
-    }
-    
     if (!isPlaying) {
       // Start playback
-      tracks.forEach(track => {
-        track.audio.play();
+      const playPromises = tracks.map(track => {
+        // Reset to beginning if ended
+        if (track.audio.ended) {
+          track.audio.currentTime = 0;
+        }
+        return track.audio.play();
       });
       
-      playButton.style.opacity = 0.6;
-      isPlaying = true;
+      // Handle all play promises
+      Promise.all(playPromises)
+        .then(() => {
+          debugMsg.style.display = 'none';
+          playButton.style.opacity = 0.6;
+          isPlaying = true;
+        })
+        .catch(error => {
+          console.error('Play error:', error);
+          debugMsg.textContent = `Playback error: ${error.message}`;
+          debugMsg.style.display = 'block';
+        });
     } else {
       // Pause playback
       tracks.forEach(track => {
@@ -299,8 +349,10 @@ function createStemPlayer(stemData) {
     if (tracks.length === 0 || !tracks[0].audio) return;
     
     const audio = tracks[0].audio;
-    const progress = (audio.currentTime / audio.duration) * 100;
-    progressMarker.style.left = `${progress}%`;
+    if (audio.duration && !isNaN(audio.duration)) {
+      const progress = (audio.currentTime / audio.duration) * 100;
+      progressMarker.style.left = `${progress}%`;
+    }
   }
 }
 
@@ -417,11 +469,8 @@ function makePopupDraggable() {
   });
 }
 
-// Initialize the application
+// Update the init function
 function init() {
-  // Add stem folders to the file data
-  addStemFoldersToFiles();
-  
   // Add 'All' category if it doesn't exist
   if (!document.querySelector('.category[data-category="all"]')) {
     const sidebar = document.querySelector('.sidebar ul');
@@ -449,8 +498,8 @@ function init() {
     }
   });
   
-  // Initial population of files
-  populateFiles(FILES_DATA);
+  // Load files data from JSON
+  loadFilesData();
 }
 
 // Initialize when DOM is fully loaded
