@@ -12,8 +12,8 @@ body {
 /* Sidebar Styling */
 .sidebar {
     width: 200px;
-    background-color: #333;
-    color: white;
+    background-color: #b7b7b7;
+    color: rgb(111, 255, 106);
     padding: 20px;
     box-shadow: 2px 0 5px rgba(0, 0, 0, 0.3);
 }
@@ -45,12 +45,13 @@ body {
     display: flex;
     flex-wrap: wrap;
     gap: 20px;
+    background-color: rgb(41, 136, 214);
 }
 
 .file {
     width: 100px;
     height: 100px;
-    background-color: white;
+    background-color: rgb(255, 255, 255);
     border: 2px solid #ccc;
     display: flex;
     align-items: center;
@@ -73,7 +74,7 @@ body {
     transform: translate(-50%, -50%);
     width: 80%;
     max-width: 600px;
-    background-color: white;
+    background-color: rgb(255, 255, 255);
     padding: 20px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
     z-index: 1000;
