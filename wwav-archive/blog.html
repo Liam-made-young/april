@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Creative Blog</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* Additional blog-specific styles */
+        .blog-entry {
+            padding: 20px;
+            line-height: 1.6;
+            font-family: "Lucida Grande", Helvetica, Arial, sans-serif;
+        }
+        
+        .blog-title {
+            margin-top: 0;
+            font-size: 24px;
+            color: #333;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 10px;
+        }
+        
+        .blog-meta {
+            color: #666;
+            font-size: 13px;
+            margin-bottom: 15px;
+        }
+        
+        .blog-content {
+            font-size: 14px;
+        }
+        
+        .blog-post {
+            cursor: pointer;
+            padding: 5px 10px;
+            margin: 1px 0;
+            transition: all 0.1s;
+            font-size: 12px;
+            color: #000;
+        }
+        
+        .blog-post:hover {
+            background-color: #d8f0d8;
+            color: #006400;
+        }
+        
+        .blog-post.selected {
+            background-color: #4ca64c;
+            color: white;
+            font-weight: bold;
+            text-shadow: 0 1px 0 rgba(0,0,0,0.3);
+        }
+        
+        /* Make the main-window scrollable for blog content */
+        .main-window.blog-viewer {
+            overflow-y: auto;
+            padding: 15px 30px;
+        }
+        
+        /* Remove the column header from blog view */
+        .main-window.blog-viewer::before {
+            content: none;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header Navigation -->
+    <header class="main-header">
+        <nav class="navigation">
+            <a href="index.html" class="nav-link">Archive</a>
+            <a href="blog.html" class="nav-link active">Blog</a>
+            <a href="contact.html" class="nav-link">Contact</a>
+        </nav>
+    </header>
+
+    <div class="container">
+        <!-- Sidebar (Blog Posts List) -->
+        <div class="sidebar">
+            <h2>Blog Posts</h2>
+            
+            <!-- Blog posts organized by date -->
+            <div class="sidebar-section">
+                <h3 class="section-header">April 2023</h3>
+                <ul>
+                    <li class="blog-post selected" data-post="post1">New Music Coming Soon</li>
+                    <li class="blog-post" data-post="post2">Studio Session Highlights</li>
+                </ul>
+            </div>
+            
+            <div class="sidebar-section">
+                <h3 class="section-header">March 2023</h3>
+                <ul>
+                    <li class="blog-post" data-post="post3">Creative Process</li>
+                    <li class="blog-post" data-post="post4">Film Project Update</li>
+                </ul>
+            </div>
+            
+            <div class="sidebar-section">
+                <h3 class="section-header">February 2023</h3>
+                <ul>
+                    <li class="blog-post" data-post="post5">Winter Inspiration</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Main Window (Blog Content) -->
+        <div class="main-window blog-viewer">
+            <div class="blog-entry" id="post1">
+                <h2 class="blog-title">New Music Coming Soon</h2>
+                <div class="blog-meta">April 15, 2023 | Music</div>
+                <div class="blog-content">
+                    <p>I'm excited to announce that I'll be releasing new music in the coming weeks. This project has been in the works for several months, and I can't wait to share it with everyone.</p>
+                    
+                    <p>The new tracks explore themes of connection and introspection, with a blend of electronic and acoustic elements that I've been developing in my home studio.</p>
+                    
+                    <p>Here's a sneak peek at what's to come:</p>
+                    
+                    <ul>
+                        <li>4 new original tracks</li>
+                        <li>Collaboration with two guest vocalists</li>
+                        <li>Accompanying visual elements</li>
+                    </ul>
+                    
+                    <p>Stay tuned for more updates and behind-the-scenes content as we get closer to the release date.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Simple script to handle blog post navigation
+        document.addEventListener('DOMContentLoaded', function() {
+            const blogPosts = document.querySelectorAll('.blog-post');
+            const mainWindow = document.querySelector('.main-window');
+            
+            // Blog post data (in a real app, this would come from a database)
+            const blogData = {
+                post1: {
+                    title: "New Music Coming Soon",
+                    date: "April 15, 2023",
+                    category: "Music",
+                    content: `
+                        <p>I'm excited to announce that I'll be releasing new music in the coming weeks. This project has been in the works for several months, and I can't wait to share it with everyone.</p>
+                        
+                        <p>The new tracks explore themes of connection and introspection, with a blend of electronic and acoustic elements that I've been developing in my home studio.</p>
+                        
+                        <p>Here's a sneak peek at what's to come:</p>
+                        
+                        <ul>
+                            <li>4 new original tracks</li>
+                            <li>Collaboration with two guest vocalists</li>
+                            <li>Accompanying visual elements</li>
+                        </ul>
+                        
+                        <p>Stay tuned for more updates and behind-the-scenes content as we get closer to the release date.</p>
+                    `
+                },
+                post2: {
+                    title: "Studio Session Highlights",
+                    date: "April 3, 2023",
+                    category: "Music",
+                    content: `
+                        <p>Just wrapped up an incredible week in the studio working on the final touches for the upcoming release. Thought I'd share some highlights from our sessions.</p>
+                        
+                        <p>Working with analog equipment has brought a warmth to these tracks that I've been missing in my recent work. There's something special about the imperfections and the tactile experience of adjusting physical knobs and faders.</p>
+                        
+                        <p>We spent an entire day just experimenting with different microphone placements for the acoustic guitar parts. The difference in tone was subtle but transformative for the overall mix.</p>
+                        
+                        <p>I can't wait to share the results with all of you. The release is coming together better than I could have imagined.</p>
+                    `
+                },
+                post3: {
+                    title: "Creative Process",
+                    date: "March 20, 2023",
+                    category: "Thoughts",
+                    content: `
+                        <p>People often ask me about my creative process, and I find it hard to give a straightforward answer because it varies so much from project to project.</p>
+                        
+                        <p>Some days, inspiration comes from a melody that pops into my head while I'm out walking. Other times, it's from deliberately sitting down with an instrument and playing until something interesting emerges.</p>
+                        
+                        <p>Lately, I've been finding inspiration in constraints. Setting limitations—like using only certain instruments or working within a specific time frame—has paradoxically opened up new creative possibilities.</p>
+                        
+                        <p>What matters most is showing up consistently and being open to where the process takes you. Not every session results in something usable, but each one teaches me something new about my craft.</p>
+                    `
+                },
+                post4: {
+                    title: "Film Project Update",
+                    date: "March 8, 2023",
+                    category: "Film",
+                    content: `
+                        <p>The short film I've been scoring is nearing completion! Working with visual media always brings a different dimension to my music creation process.</p>
+                        
+                        <p>The director and I spent several hours discussing the emotional trajectory of each scene and how music could enhance rather than overshadow the narrative. It's been a delicate balance, but I think we've found a sound that complements the visual storytelling beautifully.</p>
+                        
+                        <p>The film should be making its festival rounds later this year. I'll share details once they're finalized.</p>
+                    `
+                },
+                post5: {
+                    title: "Winter Inspiration",
+                    date: "February 15, 2023",
+                    category: "Thoughts",
+                    content: `
+                        <p>Winter has always been my most productive creative season. There's something about the quiet stillness and early darkness that encourages introspection and creative work.</p>
+                        
+                        <p>I've been spending my evenings experimenting with new sounds and reading about music theory. These periods of learning and exploration don't always yield immediate results, but they feed into the creative process in unexpected ways later on.</p>
+                        
+                        <p>I've also been revisiting some of my musical influences from years ago—artists I haven't listened to in a while but who shaped my early relationship with music. It's been interesting to hear how my perception of their work has changed over time.</p>
+                        
+                        <p>As we move toward spring, I'm feeling energized and ready to bring these winter explorations into a new project.</p>
+                    `
+                }
+            };
+            
+            // Handle blog post selection
+            function loadBlogPost(postId) {
+                const post = blogData[postId];
+                if (!post) return;
+                
+                // Create blog entry HTML
+                const blogHTML = `
+                    <div class="blog-entry" id="${postId}">
+                        <h2 class="blog-title">${post.title}</h2>
+                        <div class="blog-meta">${post.date} | ${post.category}</div>
+                        <div class="blog-content">
+                            ${post.content}
+                        </div>
+                    </div>
+                `;
+                
+                // Update main window
+                mainWindow.innerHTML = blogHTML;
+                
+                // Update selected state
+                blogPosts.forEach(post => post.classList.remove('selected'));
+                document.querySelector(`.blog-post[data-post="${postId}"]`).classList.add('selected');
+            }
+            
+            // Add click event listeners to blog posts
+            blogPosts.forEach(post => {
+                post.addEventListener('click', function() {
+                    const postId = this.dataset.post;
+                    loadBlogPost(postId);
+                });
+            });
+        });
+    </script>
+</body>
+</html>
