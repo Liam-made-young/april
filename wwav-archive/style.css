@@ -37,7 +37,7 @@ body {
 }
 
 .sidebar li {
-    padding: 5px 10px 5px 20px;
+    padding: 5px 10px;
     margin: 1px 0;
     cursor: pointer;
     transition: all 0.1s;
@@ -59,40 +59,14 @@ body {
     text-shadow: 0 1px 0 rgba(0,0,0,0.3);
 }
 
-/* Add icons to sidebar items */
+/* Remove all sidebar icons */
 .sidebar li::before {
-    content: "";
-    display: inline-block;
-    width: 16px;
-    height: 16px;
-    margin-right: 5px;
-    vertical-align: text-bottom;
-    position: absolute;
-    left: 5px;
-}
-
-.sidebar li[data-category="film"]::before {
-    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><path fill="%23333" d="M26 4H6C4.9 4 4 4.9 4 6v20c0 1.1.9 2 2 2h20c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2z"/></svg>');
-}
-
-.sidebar li[data-category="audio"]::before {
-    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><path fill="%23333" d="M24 21h-2c-1.1 0-2 .9-2 2s.9 2 2 2h2c1.1 0 2-.9 2-2s-.9-2-2-2z"/></svg>');
-}
-
-.sidebar li[data-category="image"]::before {
-    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><path fill="%23333" d="M26 26H6c-1.1 0-2-.9-2-2V8c0-1.1.9-2 2-2h20c1.1 0 2 .9 2 2v16c0 1.1-.9 2-2 2z"/></svg>');
-}
-
-.sidebar li:hover::before {
-    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><path fill="%23006400" d="M26 4H6C4.9 4 4 4.9 4 6v20c0 1.1.9 2 2 2h20c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2z"/></svg>');
-}
-
-.sidebar li[data-category="audio"]:hover::before {
-    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><path fill="%23006400" d="M24 21h-2c-1.1 0-2 .9-2 2s.9 2 2 2h2c1.1 0 2-.9 2-2s-.9-2-2-2z"/></svg>');
-}
-
-.sidebar li[data-category="image"]:hover::before {
-    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><path fill="%23006400" d="M26 26H6c-1.1 0-2-.9-2-2V8c0-1.1.9-2 2-2h20c1.1 0 2 .9 2 2v16c0 1.1-.9 2-2 2z"/></svg>');
+    content: none;
+    display: none;
+    background-image: none;
+    width: 0;
+    height: 0;
+    margin: 0;
 }
 
 /* Main Window Styling - Classic Mac OS X style */
