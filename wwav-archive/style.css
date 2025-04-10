@@ -355,3 +355,267 @@ body {
   text-align: center;
   max-width: 300px;
 }
+
+/* Dark mode toggle */
+.theme-toggle {
+    position: absolute;
+    top: 6px;
+    right: 20px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    width: 30px;
+    height: 30px;
+    border-radius: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    font-size: 16px;
+    transition: background-color 0.2s;
+}
+
+.theme-toggle:hover {
+    background-color: rgba(0, 0, 0, 0.1);
+}
+
+.dark-theme .theme-toggle:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.theme-icon {
+    transition: transform 0.3s ease;
+}
+
+.dark-theme .theme-icon {
+    transform: rotate(180deg);
+}
+
+/* Light Theme (Default) */
+html.light-theme {
+    /* Default styles are already defined in the existing CSS */
+}
+
+/* Dark Theme */
+html.dark-theme {
+    /* Body background */
+    background-color: #222;
+    color: #eee;
+}
+
+html.dark-theme body {
+    background-color: #222;
+    color: #eee;
+}
+
+/* Dark theme header */
+html.dark-theme .main-header {
+    background: linear-gradient(to bottom, #333, #222);
+    border-bottom: 1px solid #444;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+html.dark-theme .nav-link {
+    color: #ddd;
+    text-shadow: 0 1px 0 rgba(0, 0, 0, 0.5);
+}
+
+html.dark-theme .nav-link:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+html.dark-theme .nav-link.active {
+    background: linear-gradient(to bottom, #2a4d8a, #1a365a);
+    color: white;
+    text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.5);
+    box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.3);
+}
+
+/* Dark theme sidebar */
+html.dark-theme .sidebar {
+    background-color: #333;
+    border-right: 1px solid #444;
+    box-shadow: inset -1px 0 0 rgba(0, 0, 0, 0.3);
+}
+
+html.dark-theme .sidebar h2 {
+    color: #ddd;
+    text-shadow: 0 1px 0 rgba(0, 0, 0, 0.5);
+    border-bottom: 1px solid #444;
+    background: linear-gradient(to bottom, #3a3a3a, #2a2a2a);
+}
+
+html.dark-theme .sidebar li {
+    color: #ccc;
+}
+
+html.dark-theme .sidebar li:hover {
+    background-color: #1e3a5a;
+    color: #a0c0e0;
+}
+
+html.dark-theme .sidebar li.selected {
+    background-color: #2a5890;
+    color: white;
+    text-shadow: 0 1px 0 rgba(0, 0, 0, 0.5);
+}
+
+/* Sidebar section styling for dark theme */
+html.dark-theme .sidebar-section .section-header {
+    color: #999;
+    text-shadow: 0 1px 0 rgba(0, 0, 0, 0.5);
+    background: linear-gradient(to bottom, #333, #2a2a2a);
+    border-top: 1px solid #444;
+    border-bottom: 1px solid #444;
+}
+
+html.dark-theme .sidebar-section .category {
+    color: #ccc;
+}
+
+html.dark-theme .sidebar-section .category:hover {
+    background-color: #1e3a5a;
+    color: #a0c0e0;
+}
+
+html.dark-theme .sidebar-section .category.selected {
+    background-color: #2a5890;
+    color: white;
+    text-shadow: 0 1px 0 rgba(0, 0, 0, 0.5);
+}
+
+/* Main window dark theme */
+html.dark-theme .main-window {
+    background-color: #2a2a2a;
+    border: 1px solid #444;
+    box-shadow: inset 0 0 3px rgba(0, 0, 0, 0.3);
+}
+
+html.dark-theme .main-window::before {
+    background: linear-gradient(to bottom, #3a3a3a, #2a2a2a);
+    border-bottom: 1px solid #444;
+    color: #ddd;
+    text-shadow: 0 1px 0 rgba(0, 0, 0, 0.5);
+}
+
+html.dark-theme .file {
+    color: #ddd;
+}
+
+html.dark-theme .file:nth-child(odd) {
+    background-color: #2a2a2a;
+}
+
+html.dark-theme .file:nth-child(even) {
+    background-color: #323232;
+}
+
+html.dark-theme .file:hover {
+    background-color: #1e3a5a;
+}
+
+html.dark-theme .file.selected {
+    background-color: #2a5890;
+    color: white;
+}
+
+/* Content window (popup) dark theme */
+html.dark-theme .content-window {
+    background-color: #333;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.7);
+}
+
+html.dark-theme .popup-titlebar {
+    background: linear-gradient(to bottom, #3a3a3a, #2a2a2a);
+    border-bottom: 1px solid #444;
+}
+
+html.dark-theme .popup-title {
+    color: #ddd;
+    text-shadow: 0 1px 0 rgba(0, 0, 0, 0.5);
+}
+
+html.dark-theme .close-btn {
+    background-color: #ff5f57;
+    border: 1px solid #e33e32;
+}
+
+html.dark-theme .content {
+    color: #ddd;
+}
+
+/* Blog styling dark theme */
+html.dark-theme .blog-title {
+    color: #ddd;
+    border-bottom: 1px solid #444;
+}
+
+html.dark-theme .blog-meta {
+    color: #999;
+}
+
+html.dark-theme .blog-content {
+    color: #ccc;
+}
+
+/* Form elements dark theme */
+html.dark-theme .contact-container {
+    background: #333;
+    border: 1px solid #444;
+}
+
+html.dark-theme .form-group label {
+    color: #ddd;
+    text-shadow: 0 1px 0 rgba(0, 0, 0, 0.5);
+}
+
+html.dark-theme .form-group input,
+html.dark-theme .form-group textarea {
+    border: 1px solid #555;
+    background: #2a2a2a;
+    color: #ddd;
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+html.dark-theme .submit-btn {
+    background: linear-gradient(to bottom, #3a3a3a, #2a2a2a);
+    border: 1px solid #444;
+    color: #ddd;
+    text-shadow: 0 1px 0 rgba(0, 0, 0, 0.5);
+}
+
+html.dark-theme .submit-btn:hover {
+    background: linear-gradient(to bottom, #2a4d8a, #1a365a);
+    border-color: #2a5890;
+}
+
+html.dark-theme .submit-btn:active {
+    background: linear-gradient(to bottom, #1a365a, #2a5890);
+    color: white;
+    border-color: #2a5890;
+}
+
+/* Stem player dark theme */
+html.dark-theme .stem-player {
+    background-color: #333;
+}
+
+html.dark-theme .volume-label {
+    background: #1a365a;
+}
+
+html.dark-theme .volume-cell input[type="radio"]:checked + .volume-label {
+    background: #2a5890;
+}
+
+html.dark-theme .play-button {
+    border-color: transparent transparent transparent #2a5890;
+}
+
+html.dark-theme .progress-container {
+    background: #444;
+}
+
+html.dark-theme .progress-marker {
+    background: #2a5890;
+}

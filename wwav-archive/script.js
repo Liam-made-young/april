@@ -27,6 +27,98 @@ function getMimeType(src) {
   return mimeTypes[ext] || 'application/octet-stream';
 }
 
+// Create sidebar sections with headers and categories
+function createSidebarSections() {
+  // Get the sidebar
+  const sidebar = document.querySelector('.sidebar');
+  
+  // Clear current sidebar content
+  sidebar.innerHTML = '';
+  
+  // Create the main heading
+  const mainHeading = document.createElement('h2');
+  mainHeading.textContent = 'Files';
+  sidebar.appendChild(mainHeading);
+  
+  // Create sections based on file types
+  const sections = [
+    {
+      title: 'All',
+      items: [{ name: 'All Files', category: 'all', selected: true }]
+    },
+    {
+      title: 'Audio',
+      items: [
+        { name: 'All Audio', category: 'audio' },
+        { name: 'Stem Players', category: 'stems' }
+      ]
+    },
+    {
+      title: 'Visual',
+      items: [
+        { name: 'Films', category: 'film' },
+        { name: 'Images', category: 'image' }
+      ]
+    }
+  ];
+  
+  // Create each section
+  sections.forEach(section => {
+    // Create section container
+    const sectionDiv = document.createElement('div');
+    sectionDiv.className = 'sidebar-section';
+    
+    // Create section header
+    const sectionHeader = document.createElement('h3');
+    sectionHeader.className = 'section-header';
+    sectionHeader.textContent = section.title;
+    sectionDiv.appendChild(sectionHeader);
+    
+    // Create category list
+    const categoryList = document.createElement('ul');
+    
+    // Add items to category list
+    section.items.forEach(item => {
+      const categoryItem = document.createElement('li');
+      categoryItem.className = 'category' + (item.selected ? ' selected' : '');
+      categoryItem.dataset.category = item.category;
+      categoryItem.textContent = item.name;
+      categoryList.appendChild(categoryItem);
+    });
+    
+    sectionDiv.appendChild(categoryList);
+    sidebar.appendChild(sectionDiv);
+  });
+  
+  // Update DOM cache for categories
+  DOM.categories = document.querySelectorAll('.category');
+}
+
+// Set up category filtering with event delegation - UPDATED
+function setupCategoryFilters() {
+  // Target the entire sidebar instead of just one ul
+  const sidebar = document.querySelector('.sidebar');
+  
+  // Use event delegation
+  sidebar.addEventListener('click', (e) => {
+    const category = e.target.closest('.category');
+    if (!category) return;
+    
+    const selectedCategory = category.dataset.category;
+    
+    // Update selected state for all categories
+    DOM.categories.forEach(cat => cat.classList.remove('selected'));
+    category.classList.add('selected');
+    
+    // Filter and display files
+    const filteredFiles = selectedCategory === 'all' ? 
+      FILES_DATA : 
+      FILES_DATA.filter(file => file.type === selectedCategory);
+    
+    populateFiles(filteredFiles);
+  });
+}
+
 // Load files data from JSON
 async function loadFilesData() {
   try {
@@ -36,48 +128,57 @@ async function loadFilesData() {
     }
     
     const data = await response.json();
+    FILES_DATA = []; // Clear the array first to avoid duplicates
     
     // Process audio files
-    data.audio.forEach(file => {
-      FILES_DATA.push({
-        name: file.name,
-        type: 'audio',
-        src: file.src
+    if (data.audio && Array.isArray(data.audio)) {
+      data.audio.forEach(file => {
+        FILES_DATA.push({
+          name: file.name,
+          type: 'audio',
+          src: file.src
+        });
       });
-    });
+    }
     
     // Process film files
-    data.films.forEach(file => {
-      FILES_DATA.push({
-        name: file.name,
-        type: 'film',
-        src: file.src
+    if (data.films && Array.isArray(data.films)) {
+      data.films.forEach(file => {
+        FILES_DATA.push({
+          name: file.name,
+          type: 'film',
+          src: file.src
+        });
       });
-    });
+    }
     
     // Process image files
-    data.images.forEach(file => {
-      FILES_DATA.push({
-        name: file.name,
-        type: 'image',
-        src: file.src
+    if (data.images && Array.isArray(data.images)) {
+      data.images.forEach(file => {
+        FILES_DATA.push({
+          name: file.name,
+          type: 'image',
+          src: file.src
+        });
       });
-    });
+    }
     
     // Process stem folders
-    data.stems.forEach(stem => {
-      FILES_DATA.push({
-        name: stem.name + " (Stem Player)",
-        type: 'stems',
-        src: stem.folder,
-        stemData: stem
+    if (data.stems && Array.isArray(data.stems)) {
+      data.stems.forEach(stem => {
+        FILES_DATA.push({
+          name: stem.name + " (Stem Player)",
+          type: 'stems',
+          src: stem.folder,
+          stemData: stem
+        });
       });
-    });
+    }
+    
+    console.log(`Loaded ${FILES_DATA.length} files from JSON`);
     
     // Initial population of files
     populateFiles(FILES_DATA);
-    
-    console.log(`Loaded ${FILES_DATA.length} files from JSON`);
     
   } catch (error) {
     console.error('Error loading files data:', error);
@@ -356,30 +457,6 @@ function createStemPlayer(stemData) {
   }
 }
 
-// Set up category filtering with event delegation
-function setupCategoryFilters() {
-  const sidebar = document.querySelector('.sidebar ul');
-  
-  // Use event delegation
-  sidebar.addEventListener('click', (e) => {
-    const category = e.target.closest('.category');
-    if (!category) return;
-    
-    const selectedCategory = category.dataset.category;
-    
-    // Update selected state
-    DOM.categories.forEach(cat => cat.classList.remove('selected'));
-    category.classList.add('selected');
-    
-    // Filter and display files
-    const filteredFiles = selectedCategory === 'all' ? 
-      FILES_DATA : 
-      FILES_DATA.filter(file => file.type === selectedCategory);
-    
-    populateFiles(filteredFiles);
-  });
-}
-
 // Make popup draggable
 function makePopupDraggable() {
   const popup = DOM.contentWindow;
@@ -471,18 +548,8 @@ function makePopupDraggable() {
 
 // Update the init function
 function init() {
-  // Add 'All' category if it doesn't exist
-  if (!document.querySelector('.category[data-category="all"]')) {
-    const sidebar = document.querySelector('.sidebar ul');
-    const allCategory = document.createElement('li');
-    allCategory.className = 'category selected';
-    allCategory.dataset.category = 'all';
-    allCategory.textContent = 'All Files';
-    sidebar.insertBefore(allCategory, sidebar.firstChild);
-    
-    // Update DOM cache
-    DOM.categories = document.querySelectorAll('.category');
-  }
+  // Replace the old category creation with our new sections
+  createSidebarSections();
   
   // Make popup draggable
   makePopupDraggable();
