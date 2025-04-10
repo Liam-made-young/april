@@ -619,3 +619,34 @@ html.dark-theme .progress-container {
 html.dark-theme .progress-marker {
     background: #2a5890;
 }
+
+/* Update the back button style to match file system aesthetics */
+.back-button {
+    display: flex;
+    align-items: center;
+    background-color: var(--background-primary);
+    color: var(--text-color);
+    padding: 15px 20px;
+    margin: 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    border: 1px solid var(--border-color);
+    transition: all 0.2s ease;
+    grid-column: 1 / -1; /* Make it span the full width in grid layout */
+}
+
+.back-button::before {
+    content: '←';
+    margin-right: 10px;
+    font-size: 18px;
+}
+
+.back-button:hover {
+    background-color: var(--accent-color);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+/* You can remove the folder-navigation styles if not needed elsewhere */

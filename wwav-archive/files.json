@@ -1,90 +1,130 @@
 {
-  "audio": [
-    {
-      "name": "Micheals Body",
-      "src": "audio/Micheals Body.mp3"
-    },
-    {
-      "name": "tokyo taxi cab",
-      "src": "audio/tokyo taxi cab.m4a"
-    },
-    {
-      "name": "sutters",
-      "src": "audio/sutters.wav"
-    },
-    {
-      "name": "camp jewell ymca",
-      "src": "audio/camp jewell ymca.mp3"
-    },
-    {
-      "name": "scars",
-      "src": "audio/scars.wav"
-    },
-    {
-      "name": "Magdeline",
-      "src": "audio/Magdeline.wav"
-    },
-    {
-      "name": "White Party",
-      "src": "audio/White Party.mp3"
-    },
-    {
-      "name": "Golden ball pt.2",
-      "src": "audio/Golden ball pt.2.m4a"
-    },
-    {
-      "name": "Free?",
-      "src": "audio/Free?.mp3"
-    },
-    {
-      "name": "Resurrected",
-      "src": "audio/Resurrected.m4a"
-    },
-    {
-      "name": "3.) henry young_M",
-      "src": "audio/3.) henry young_M.wav"
-    },
-    {
-      "name": "maktub",
-      "src": "audio/maktub.wav"
-    },
-    {
-      "name": "bushwick",
-      "src": "audio/bushwick.m4a"
-    },
-    {
-      "name": "Den",
-      "src": "audio/Den.m4a"
-    },
-    {
-      "name": "4.) parking lot angels_M",
-      "src": "audio/4.) parking lot angels_M.wav"
-    },
-    {
-      "name": "god, trust in me",
-      "src": "audio/god, trust in me.wav"
-    },
-    {
-      "name": "Mission",
-      "src": "audio/Mission.mp3"
-    },
-    {
-      "name": "Marlboroz on the roof",
-      "src": "audio/Marlboroz on the roof.wav"
-    }
-  ],
-  "films": [
-    {
-      "name": "ScreenRecording_01-02-2025 02-34-14_1",
-      "src": "films/ScreenRecording_01-02-2025 02-34-14_1.mp4"
-    }
-  ],
-  "images": [
-    {
-      "name": "381B29C6-F186-40BF-A29B-883F121222ED_1_105_c",
-      "src": "images/381B29C6-F186-40BF-A29B-883F121222ED_1_105_c.jpeg"
-    }
-  ],
+  "audio": {
+    "files": [
+      {
+        "name": "Micheals Body",
+        "src": "audio/Micheals Body.mp3"
+      },
+      {
+        "name": "tokyo taxi cab",
+        "src": "audio/tokyo taxi cab.m4a"
+      },
+      {
+        "name": "sutters",
+        "src": "audio/sutters.wav"
+      },
+      {
+        "name": "camp jewell ymca",
+        "src": "audio/camp jewell ymca.mp3"
+      },
+      {
+        "name": "scars",
+        "src": "audio/scars.wav"
+      },
+      {
+        "name": "Magdeline",
+        "src": "audio/Magdeline.wav"
+      },
+      {
+        "name": "White Party",
+        "src": "audio/White Party.mp3"
+      },
+      {
+        "name": "Golden ball pt.2",
+        "src": "audio/Golden ball pt.2.m4a"
+      },
+      {
+        "name": "Free?",
+        "src": "audio/Free?.mp3"
+      },
+      {
+        "name": "Resurrected",
+        "src": "audio/Resurrected.m4a"
+      },
+      {
+        "name": "3.) henry young_M",
+        "src": "audio/3.) henry young_M.wav"
+      },
+      {
+        "name": "maktub",
+        "src": "audio/maktub.wav"
+      },
+      {
+        "name": "bushwick",
+        "src": "audio/bushwick.m4a"
+      },
+      {
+        "name": "Den",
+        "src": "audio/Den.m4a"
+      },
+      {
+        "name": "4.) parking lot angels_M",
+        "src": "audio/4.) parking lot angels_M.wav"
+      },
+      {
+        "name": "god, trust in me",
+        "src": "audio/god, trust in me.wav"
+      },
+      {
+        "name": "Mission",
+        "src": "audio/Mission.mp3"
+      },
+      {
+        "name": "Marlboroz on the roof",
+        "src": "audio/Marlboroz on the roof.wav"
+      }
+    ],
+    "folders": [
+      {
+        "name": "[audio] classical",
+        "type": "folder",
+        "path": "audio/[audio] classical",
+        "contents": {
+          "files": [
+            {
+              "name": "Blue",
+              "src": "audio/[audio] classical/Blue.wav"
+            },
+            {
+              "name": "Yellow",
+              "src": "audio/[audio] classical/Yellow.wav"
+            },
+            {
+              "name": "Red",
+              "src": "audio/[audio] classical/Red.wav"
+            },
+            {
+              "name": "Orange",
+              "src": "audio/[audio] classical/Orange.wav"
+            },
+            {
+              "name": "Indigo",
+              "src": "audio/[audio] classical/Indigo.wav"
+            }
+          ],
+          "folders": []
+        }
+      }
+    ]
+  },
+  "films": {
+    "files": [
+      {
+        "name": "ScreenRecording_01-02-2025 02-34-14_1",
+        "src": "films/ScreenRecording_01-02-2025 02-34-14_1.mp4"
+      }
+    ],
+    "folders": []
+  },
+  "images": {
+    "files": [
+      {
+        "name": "381B29C6-F186-40BF-A29B-883F121222ED_1_105_c",
+        "src": "images/381B29C6-F186-40BF-A29B-883F121222ED_1_105_c.jpeg"
+      }
+    ],
+    "folders": []
+  },
   "stems": [
     {
       "name": "Marlboroz On The Roof",

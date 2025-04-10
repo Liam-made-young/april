@@ -10,6 +10,10 @@ const DOM = {
 // Global files data
 let FILES_DATA = [];
 
+// Navigation stack for folder browsing
+const navigationStack = [];
+let currentFolder = null;
+
 // Determine media type by file extension
 function getMimeType(src) {
   const ext = src.split('.').pop().toLowerCase();
@@ -130,40 +134,115 @@ async function loadFilesData() {
     const data = await response.json();
     FILES_DATA = []; // Clear the array first to avoid duplicates
     
-    // Process audio files
-    if (data.audio && Array.isArray(data.audio)) {
-      data.audio.forEach(file => {
-        FILES_DATA.push({
-          name: file.name,
-          type: 'audio',
-          src: file.src
+    // Process audio files - handle both new and old format
+    if (data.audio) {
+      if (Array.isArray(data.audio)) {
+        // Old format
+        data.audio.forEach(file => {
+          FILES_DATA.push({
+            name: file.name,
+            type: 'audio',
+            src: file.src
+          });
         });
-      });
+      } else if (data.audio.files && Array.isArray(data.audio.files)) {
+        // New format
+        data.audio.files.forEach(file => {
+          FILES_DATA.push({
+            name: file.name,
+            type: 'audio',
+            src: file.src
+          });
+        });
+        
+        // Process audio folders if present in new format
+        if (data.audio.folders && Array.isArray(data.audio.folders)) {
+          data.audio.folders.forEach(folder => {
+            FILES_DATA.push({
+              name: folder.name,
+              type: 'folder',
+              contentType: 'audio',
+              path: folder.path,
+              contents: folder.contents
+            });
+          });
+        }
+      }
     }
     
-    // Process film files
-    if (data.films && Array.isArray(data.films)) {
-      data.films.forEach(file => {
-        FILES_DATA.push({
-          name: file.name,
-          type: 'film',
-          src: file.src
+    // Process films
+    if (data.films) {
+      if (Array.isArray(data.films)) {
+        // Old format
+        data.films.forEach(file => {
+          FILES_DATA.push({
+            name: file.name,
+            type: 'film',
+            src: file.src
+          });
         });
-      });
+      } else if (data.films.files && Array.isArray(data.films.files)) {
+        // New format
+        data.films.files.forEach(file => {
+          FILES_DATA.push({
+            name: file.name,
+            type: 'film',
+            src: file.src
+          });
+        });
+        
+        // Process film folders if present in new format
+        if (data.films.folders && Array.isArray(data.films.folders)) {
+          data.films.folders.forEach(folder => {
+            FILES_DATA.push({
+              name: folder.name,
+              type: 'folder',
+              contentType: 'film',
+              path: folder.path,
+              contents: folder.contents
+            });
+          });
+        }
+      }
     }
     
-    // Process image files
-    if (data.images && Array.isArray(data.images)) {
-      data.images.forEach(file => {
-        FILES_DATA.push({
-          name: file.name,
-          type: 'image',
-          src: file.src
+    // Process images
+    if (data.images) {
+      if (Array.isArray(data.images)) {
+        // Old format
+        data.images.forEach(file => {
+          FILES_DATA.push({
+            name: file.name,
+            type: 'image',
+            src: file.src
+          });
         });
-      });
+      } else if (data.images.files && Array.isArray(data.images.files)) {
+        // New format
+        data.images.files.forEach(file => {
+          FILES_DATA.push({
+            name: file.name,
+            type: 'image',
+            src: file.src
+          });
+        });
+        
+        // Process image folders if present in new format
+        if (data.images.folders && Array.isArray(data.images.folders)) {
+          data.images.folders.forEach(folder => {
+            FILES_DATA.push({
+              name: folder.name,
+              type: 'folder',
+              contentType: 'image',
+              path: folder.path,
+              contents: folder.contents
+            });
+          });
+        }
+      }
     }
     
-    // Process stem folders
+    // Process stem folders - keep this the same as it was
     if (data.stems && Array.isArray(data.stems)) {
       data.stems.forEach(stem => {
         FILES_DATA.push({
@@ -194,11 +273,31 @@ function populateFiles(files) {
   // Use DocumentFragment for better performance
   const fragment = document.createDocumentFragment();
   
+  // Add back button if we're in a folder (navigationStack has items)
+  if (navigationStack.length > 0) {
+    const backButton = document.createElement('div');
+    backButton.className = 'file back-button';
+    backButton.id = 'back-button';
+    backButton.textContent = 'Return to Parent Folder';
+    
+    // Add click handler directly to the button
+    backButton.addEventListener('click', navigateBack);
+    
+    fragment.appendChild(backButton);
+  }
+  
+  // Add all the files and folders
   files.forEach(file => {
     const fileElement = document.createElement('div');
     fileElement.className = 'file';
     fileElement.dataset.type = file.type;
-    fileElement.dataset.src = file.src;
+    
+    if (file.type === 'folder') {
+      fileElement.classList.add('folder');
+      fileElement.dataset.path = file.path;
+    } else {
+      fileElement.dataset.src = file.src;
+    }
     
     // Store stem data reference if applicable
     if (file.stemData) {
@@ -232,6 +331,19 @@ function handleFileClick(e) {
   
   const type = fileElement.dataset.type;
   const src = fileElement.dataset.src;
+  
+  // Handle folder click
+  if (type === 'folder') {
+    const folderPath = fileElement.dataset.path;
+    const folderData = currentFolder ? 
+      currentFolder.files.find(f => f.type === 'folder' && f.path === folderPath) :
+      FILES_DATA.find(f => f.type === 'folder' && f.path === folderPath);
+    
+    if (folderData) {
+      navigateToFolder(folderData);
+    }
+    return;
+  }
   
   // Clear content first (better performance)
   DOM.content.innerHTML = '';
@@ -544,6 +656,49 @@ function makePopupDraggable() {
       popup.style.transform = 'translate(-50%, -50%)';
     }, 300);
   });
+}
+
+// Add this function to handle folder navigation
+function navigateToFolder(folder) {
+  // Push current state to navigation stack
+  if (currentFolder) {
+    navigationStack.push(currentFolder);
+  } else {
+    navigationStack.push({
+      files: FILES_DATA,
+      name: 'Home'
+    });
+  }
+  
+  // Set current folder
+  currentFolder = {
+    files: [...folder.contents.files.map(file => ({
+      name: file.name,
+      type: folder.contentType,
+      src: file.src
+    })), ...folder.contents.folders.map(subFolder => ({
+      name: subFolder.name,
+      type: 'folder',
+      contentType: folder.contentType,
+      path: subFolder.path,
+      contents: subFolder.contents
+    }))],
+    name: folder.name
+  };
+  
+  // Display folder contents
+  populateFiles(currentFolder.files);
+}
+
+// Function to navigate back
+function navigateBack() {
+  if (navigationStack.length > 0) {
+    // Pop the last folder from the stack
+    currentFolder = navigationStack.pop();
+    
+    // Display folder contents
+    populateFiles(currentFolder.files);
+  }
 }
 
 // Update the init function
